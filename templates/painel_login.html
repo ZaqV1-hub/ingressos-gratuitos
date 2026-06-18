@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ page_title }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body>
+    <main class="page reservation-page">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <section class="flash-list reservation-alerts">
+            {% for category, message in messages %}
+              <div class="flash-message flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+          </section>
+        {% endif %}
+      {% endwith %}
+
+      <section class="form-card reservation-card login-card">
+        <header class="form-header">
+          <h1>Login do Painel</h1>
+          <p>Entre para acessar as reservas.</p>
+        </header>
+
+        <form method="post" action="{{ url_for('panel_login') }}" class="reservation-form">
+          <input type="hidden" name="next" value="{{ next_url }}" />
+          <section class="form-section login-section">
+            <div class="form-grid single-grid">
+              <label>
+                <span>Usuário</span>
+                <input type="text" name="username" required />
+              </label>
+              <label>
+                <span>Senha</span>
+                <input type="password" name="password" required />
+              </label>
+            </div>
+          </section>
+
+          <button type="submit" class="primary-button large-button">Entrar</button>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>

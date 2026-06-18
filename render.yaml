@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: reserva-ingressos
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.5
+      - key: STORAGE_BACKEND
+        value: firebase
+      - key: SECRET_KEY
+        generateValue: true
+      - key: FIREBASE_SERVICE_ACCOUNT_JSON_BASE64
+        sync: false

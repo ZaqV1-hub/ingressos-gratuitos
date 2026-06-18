@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ page_title }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="shell">
+        <section class="topbar">
+          <div>
+            <h1>Painel de Reservas</h1>
+            <div class="date-line">
+              <span class="date-icon">+</span>
+              <p>{{ event_date_label }}</p>
+            </div>
+          </div>
+          <div class="panel-actions">
+            <a class="export-button" href="{{ url_for('export_excel') }}">Exportar Excel</a>
+            <form method="post" action="{{ url_for('panel_logout') }}">
+              <button type="submit" class="secondary-button">Sair</button>
+            </form>
+          </div>
+        </section>
+
+        <section class="stats-grid">
+          <article class="stat-card stat-green">
+            <div class="stat-icon">+</div>
+            <div>
+              <p>Quantidade de pessoas previstas</p>
+              <strong>{{ stats.total_people }}</strong>
+            </div>
+          </article>
+          <article class="stat-card stat-blue">
+            <div class="stat-icon">+</div>
+            <div>
+              <p>Titulares registrados</p>
+              <strong>{{ stats.holder_count }}</strong>
+            </div>
+          </article>
+          <article class="stat-card stat-purple">
+            <div class="stat-icon">+</div>
+            <div>
+              <p>Acompanhantes registrados</p>
+              <strong>{{ stats.companion_count }}</strong>
+            </div>
+          </article>
+        </section>
+
+        <section class="table-card">
+          <div class="table-head">
+            <h2>Lista de Reservas</h2>
+            <label class="search-box">
+              <input id="search-input" type="text" placeholder="Buscar por nome ou telefone..." />
+            </label>
+          </div>
+
+          {% if reservations %}
+            <div class="table-wrap">
+              <table class="reservations-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Titular</th>
+                    <th>Telefone</th>
+                    <th>Total pessoas</th>
+                    <th>Data/Hora</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for reservation in reservations %}
+                    <tr class="reservation-row" data-search="{{ reservation.holder_name|lower }} {{ reservation.holder_phone|lower }} {% for companion in reservation.companions %} {{ companion.name|lower }} {{ companion.phone|lower }} {% endfor %}">
+                      <td class="id-cell">
+                        <button type="button" class="toggle-button" data-target="details-{{ reservation.id }}">+</button>
+                        <span>{{ reservation.id }}</span>
+                      </td>
+                      <td>{{ reservation.holder_name }}</td>
+                      <td>{{ reservation.holder_phone or "—" }}</td>
+                      <td><span class="people-badge">{{ reservation.total_people }}</span></td>
+                      <td>{{ reservation.created_at_display }}</td>
+                    </tr>
+                    <tr id="details-{{ reservation.id }}" class="details-row details-hidden">
+                      <td colspan="5">
+                        <div class="details-panel">
+                          <h3>Acompanhantes ({{ reservation.companions|length }})</h3>
+                          {% if reservation.companions %}
+                            <div class="details-grid details-grid-head">
+                              <span>Nome</span>
+                              <span>Telefone</span>
+                            </div>
+                            {% for companion in reservation.companions %}
+                              <div class="details-grid">
+                                <span>{{ companion.name }}</span>
+                                <span>{{ companion.phone or "—" }}</span>
+                              </div>
+                            {% endfor %}
+                          {% else %}
+                            <p class="empty-text">Nenhum acompanhante adicionado.</p>
+                          {% endif %}
+                        </div>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <p class="empty-text table-empty">Ainda não existe nenhuma reserva cadastrada.</p>
+          {% endif %}
+        </section>
+      </section>
+    </main>
+
+    <script>
+      const searchInput = document.getElementById("search-input");
+      const reservationRows = Array.from(document.querySelectorAll(".reservation-row"));
+
+      document.querySelectorAll(".toggle-button").forEach((button) => {
+        button.addEventListener("click", () => {
+          const target = document.getElementById(button.dataset.target);
+          const isHidden = target.classList.contains("details-hidden");
+          target.classList.toggle("details-hidden", !isHidden);
+          button.textContent = isHidden ? "-" : "+";
+        });
+      });
+
+      if (searchInput) {
+        searchInput.addEventListener("input", () => {
+          const term = searchInput.value.trim().toLowerCase();
+          reservationRows.forEach((row) => {
+            const match = row.dataset.search.includes(term);
+            row.style.display = match ? "" : "none";
+            const detailsRow = document.getElementById(
+              row.querySelector(".toggle-button").dataset.target
+            );
+            detailsRow.style.display = match ? "" : "none";
+            if (!match) {
+              detailsRow.classList.add("details-hidden");
+              row.querySelector(".toggle-button").textContent = "+";
+            }
+          });
+        });
+      }
+    </script>
+  </body>
+</html>

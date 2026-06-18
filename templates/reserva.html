@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ page_title }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body>
+    <main class="page reservation-page">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <section class="flash-list reservation-alerts">
+            {% for category, message in messages %}
+              <div class="flash-message flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+          </section>
+        {% endif %}
+      {% endwith %}
+
+      <section class="form-card reservation-card">
+        <header class="form-header">
+          <h1>{{ reservation_title }}</h1>
+          <p>{{ reservation_subtitle }}</p>
+        </header>
+
+        <form method="post" action="{{ url_for('create_reservation') }}" class="reservation-form">
+          <section class="form-section">
+            <div class="section-title">
+              <div class="section-badge">+</div>
+              <div>
+                <h2>Titular da Reserva</h2>
+              </div>
+            </div>
+
+              <div class="form-grid">
+                <label>
+                  <span>Nome do titular <b>*</b></span>
+                  <input type="text" name="holder_name" placeholder="Digite o nome completo" required />
+                </label>
+                <label>
+                  <span>Telefone <b>*</b></span>
+                  <input type="text" name="holder_phone" placeholder="(11) 99999-9999" required />
+                </label>
+              </div>
+          </section>
+
+          <section class="form-section form-section-bordered">
+            <div class="section-title">
+              <div class="section-badge">+</div>
+              <div>
+                <h2>Acompanhantes</h2>
+                <p>Adicione quantos acompanhantes quiser</p>
+              </div>
+            </div>
+
+            <div id="companions-list" class="companions-list"></div>
+
+            <button type="button" class="secondary-button" id="add-companion">
+              Adicionar acompanhante
+            </button>
+          </section>
+
+          <button type="submit" class="primary-button large-button">Confirmar Reserva</button>
+        </form>
+      </section>
+    </main>
+
+    <template id="companion-template">
+      <div class="companion-row">
+        <label>
+          <span>Nome do acompanhante <b>*</b></span>
+          <input type="text" name="companion_name[]" placeholder="Digite o nome completo" />
+        </label>
+        <label>
+          <span>Telefone</span>
+          <input type="text" name="companion_phone[]" placeholder="(11) 99999-9999" />
+        </label>
+        <button type="button" class="remove-button">Remover</button>
+      </div>
+    </template>
+
+    <script>
+      const addButton = document.getElementById("add-companion");
+      const list = document.getElementById("companions-list");
+      const template = document.getElementById("companion-template");
+
+      function bindRemove(button) {
+        button.addEventListener("click", () => {
+          button.closest(".companion-row").remove();
+        });
+      }
+
+      addButton.addEventListener("click", () => {
+        const fragment = template.content.cloneNode(true);
+        const removeButton = fragment.querySelector(".remove-button");
+        bindRemove(removeButton);
+        list.appendChild(fragment);
+      });
+    </script>
+  </body>
+</html>
