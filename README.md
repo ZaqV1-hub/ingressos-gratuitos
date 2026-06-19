@@ -70,3 +70,21 @@ Exemplo para converter o JSON em Base64 no PowerShell:
 ```
 
 Se preferir, use o arquivo [gerar_firebase_base64.ps1](C:/Users/Rincao-TI1/Documents/Codex/2026-06-18/eu-quero-criar-um-sistemazinho-de/gerar_firebase_base64.ps1).
+
+## E-mail por Zoho
+
+Para ativar o envio de confirmação por e-mail, configure:
+
+```env
+ZOHO_SMTP_HOST=smtp.zoho.com
+ZOHO_SMTP_PORT=465
+ZOHO_SMTP_USERNAME=seu-email
+ZOHO_SMTP_PASSWORD=sua-senha-ou-app-password
+ZOHO_SMTP_FROM_EMAIL=seu-email
+ZOHO_SMTP_FROM_NAME=Clube Rincão
+ZOHO_SMTP_USE_SSL=true
+```
+
+## Observação sobre o plano Free do Render
+
+No plano free, a instância pode entrar em repouso por inatividade. Quando alguém acessa depois disso, o primeiro carregamento pode demorar dezenas de segundos enquanto o serviço volta a subir. Esse comportamento é normal no free do Render. Para evitar isso de vez, só mudando para um plano pago.

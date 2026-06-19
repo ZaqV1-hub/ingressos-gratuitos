@@ -4,9 +4,11 @@ import base64
 import io
 import json
 import os
+import smtplib
 from abc import ABC, abstractmethod
-from functools import wraps
 from datetime import datetime
+from email.message import EmailMessage
+from functools import wraps
 from pathlib import Path
 from typing import Any
 
@@ -44,15 +46,47 @@ DATA_FILE = DATA_DIR / "reservas.json"
 APP_PORT = int(os.getenv("PORT", os.getenv("APP_PORT", "5001")))
 STORAGE_BACKEND = os.getenv("STORAGE_BACKEND", "local").strip().lower()
 
-EVENT_DATE_LABEL = "17 de junho de 2025"
+EVENT_DATE_LABEL = "28 de junho de 2026"
 PANEL_TITLE = "Painel de Reservas"
 RESERVATION_TITLE = "Reserva de Ingressos"
 RESERVATION_SUBTITLE = "Preencha os dados para reservar seus ingressos"
 PANEL_USERNAME = os.getenv("PANEL_USERNAME", "operador5979")
 PANEL_PASSWORD = os.getenv("PANEL_PASSWORD", "reservas10")
+ZOHO_SMTP_HOST = os.getenv("ZOHO_SMTP_HOST", "smtp.zoho.com")
+ZOHO_SMTP_PORT = int(os.getenv("ZOHO_SMTP_PORT", "465"))
+ZOHO_SMTP_USERNAME = os.getenv("ZOHO_SMTP_USERNAME", "").strip()
+ZOHO_SMTP_PASSWORD = os.getenv("ZOHO_SMTP_PASSWORD", "").strip()
+ZOHO_SMTP_FROM_EMAIL = os.getenv("ZOHO_SMTP_FROM_EMAIL", ZOHO_SMTP_USERNAME).strip()
+ZOHO_SMTP_FROM_NAME = os.getenv("ZOHO_SMTP_FROM_NAME", "Clube e Park Rincão").strip()
+ZOHO_SMTP_USE_SSL = os.getenv("ZOHO_SMTP_USE_SSL", "true").strip().lower() in {
+    "1",
+    "true",
+    "yes",
+}
+IS_RENDER_ENV = bool(os.getenv("RENDER") or os.getenv("RENDER_EXTERNAL_URL"))
+
+TERMS_TEXT = """
+Declaro estar ciente às regras do parque abaixo:
+
+- Tenho ciência que o FAMILY DAY acontece somente 1 vez por ano no Clube Rincão, normalmente entre os meses de junho e julho. A data do dia 28/06/2026 está sendo divulgada nas redes sociais e no site oficial do parque.
+
+- O evento está limitado ao número de 400 participantes com gratuidade. Após esse total será adotada a tarifa normal do parque.
+
+- As regras comuns do parque para famílias continuam valendo:
+  * Estacionamento R$ 20,00 carro e motos;
+  * Proibida a entrada de alimentos e bebidas;
+  * Esse agendamento terá validade somente para o dia 28/06/2026.
+
+Outras informações iremos publicar em nossa rede social.
+
+Dúvidas ou esclarecimentos:
+11-99949-6373
+Wagner Alves
+""".strip()
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "reserva-local-simples")
+STORE_MODE = "local"
 
 
 def format_datetime(value: str) -> str:
@@ -72,8 +106,10 @@ class ReservationStore(ABC):
     def create_reservation(
         self,
         holder_name: str,
+        holder_email: str,
         holder_phone: str,
         companions: list[dict[str, str]],
+        terms_accepted_at: str,
     ) -> dict[str, Any]:
         raise NotImplementedError
 
@@ -104,15 +140,19 @@ class LocalJsonStore(ReservationStore):
     def create_reservation(
         self,
         holder_name: str,
+        holder_email: str,
         holder_phone: str,
         companions: list[dict[str, str]],
+        terms_accepted_at: str,
     ) -> dict[str, Any]:
         data = self.load_data()
         reservation = {
             "id": data["next_id"],
             "holder_name": holder_name,
+            "holder_email": holder_email,
             "holder_phone": holder_phone,
             "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "terms_accepted_at": terms_accepted_at,
             "companions": companions,
         }
         data["reservations"].append(reservation)
@@ -159,8 +199,10 @@ class FirestoreStore(ReservationStore):
                 {
                     "id": data["id"],
                     "holder_name": data["holder_name"],
+                    "holder_email": data.get("holder_email", ""),
                     "holder_phone": data.get("holder_phone", ""),
                     "created_at": data["created_at"],
+                    "terms_accepted_at": data.get("terms_accepted_at", ""),
                     "companions": data.get("companions", []),
                 }
             )
@@ -169,8 +211,10 @@ class FirestoreStore(ReservationStore):
     def create_reservation(
         self,
         holder_name: str,
+        holder_email: str,
         holder_phone: str,
         companions: list[dict[str, str]],
+        terms_accepted_at: str,
     ) -> dict[str, Any]:
         counter_ref = self.db.collection("meta").document("counters")
 
@@ -183,8 +227,10 @@ class FirestoreStore(ReservationStore):
             reservation = {
                 "id": next_id,
                 "holder_name": holder_name,
+                "holder_email": holder_email,
                 "holder_phone": holder_phone,
                 "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "terms_accepted_at": terms_accepted_at,
                 "companions": companions,
             }
             transaction.set(ref, {"next_id": next_id + 1}, merge=True)
@@ -198,8 +244,17 @@ class FirestoreStore(ReservationStore):
 
 
 def create_store() -> ReservationStore:
+    global STORE_MODE
     if STORAGE_BACKEND == "firebase":
-        return FirestoreStore()
+        try:
+            STORE_MODE = "firebase"
+            return FirestoreStore()
+        except Exception:
+            if IS_RENDER_ENV:
+                raise
+            STORE_MODE = "local"
+            return LocalJsonStore(DATA_FILE)
+    STORE_MODE = "local"
     return LocalJsonStore(DATA_FILE)
 
 
@@ -214,9 +269,11 @@ def get_reservations() -> list[dict[str, Any]]:
             {
                 "id": item["id"],
                 "holder_name": item["holder_name"],
+                "holder_email": item.get("holder_email", ""),
                 "holder_phone": item.get("holder_phone", ""),
                 "created_at": item["created_at"],
                 "created_at_display": format_datetime(item["created_at"]),
+                "terms_accepted_at": item.get("terms_accepted_at", ""),
                 "companions": companions,
                 "total_people": 1 + len(companions),
             }
@@ -249,6 +306,68 @@ def require_panel_login(view_func):
     return wrapped_view
 
 
+def send_confirmation_email(reservation: dict[str, Any]) -> None:
+    if not (
+        ZOHO_SMTP_USERNAME
+        and ZOHO_SMTP_PASSWORD
+        and ZOHO_SMTP_FROM_EMAIL
+        and reservation.get("holder_email")
+    ):
+        return
+
+    total_people = 1 + len(reservation.get("companions", []))
+    companion_lines = []
+    for companion in reservation.get("companions", []):
+        phone = companion.get("phone") or "Não informado"
+        companion_lines.append(f"- {companion.get('name', '')} | {phone}")
+
+    companion_text = "\n".join(companion_lines) if companion_lines else "- Nenhum acompanhante"
+    body = f"""Olá, {reservation['holder_name']}!
+
+Sua reserva para o Family Day do Clube e Park Rincão foi confirmada.
+
+Data da reserva: 28/06/2026
+Titular: {reservation['holder_name']}
+E-mail: {reservation['holder_email']}
+Telefone: {reservation['holder_phone']}
+Total de pessoas: {total_people}
+
+Acompanhantes:
+{companion_text}
+
+Regras importantes:
+- O FAMILY DAY acontece somente uma vez por ano no Clube Rincão.
+- O evento é limitado a 400 participantes com gratuidade.
+- Estacionamento: R$ 20,00 para carro e motos.
+- Proibida a entrada de alimentos e bebidas.
+- Este agendamento vale somente para o dia 28/06/2026.
+
+Dúvidas ou esclarecimentos:
+11-99949-6373
+Wagner Alves
+"""
+
+    message = EmailMessage()
+    message["Subject"] = "Confirmação da sua reserva - Family Day Rincão"
+    message["From"] = (
+        f"{ZOHO_SMTP_FROM_NAME} <{ZOHO_SMTP_FROM_EMAIL}>"
+        if ZOHO_SMTP_FROM_NAME
+        else ZOHO_SMTP_FROM_EMAIL
+    )
+    message["To"] = reservation["holder_email"]
+    message.set_content(body)
+
+    if ZOHO_SMTP_USE_SSL:
+        with smtplib.SMTP_SSL(ZOHO_SMTP_HOST, ZOHO_SMTP_PORT, timeout=30) as smtp:
+            smtp.login(ZOHO_SMTP_USERNAME, ZOHO_SMTP_PASSWORD)
+            smtp.send_message(message)
+    else:
+        with smtplib.SMTP(ZOHO_SMTP_HOST, ZOHO_SMTP_PORT, timeout=30) as smtp:
+            smtp.starttls()
+            smtp.login(ZOHO_SMTP_USERNAME, ZOHO_SMTP_PASSWORD)
+            smtp.send_message(message)
+
+
 @app.route("/", methods=["GET"])
 def home():
     return redirect(url_for("reservation_page"))
@@ -261,6 +380,8 @@ def reservation_page():
         page_title=RESERVATION_TITLE,
         reservation_title=RESERVATION_TITLE,
         reservation_subtitle=RESERVATION_SUBTITLE,
+        event_date_label=EVENT_DATE_LABEL,
+        terms_text=TERMS_TEXT,
     )
 
 
@@ -307,16 +428,26 @@ def panel_logout():
 @app.route("/reservations", methods=["POST"])
 def create_reservation():
     holder_name = request.form.get("holder_name", "").strip()
+    holder_email = request.form.get("holder_email", "").strip()
     holder_phone = request.form.get("holder_phone", "").strip()
     companion_names = request.form.getlist("companion_name[]")
     companion_phones = request.form.getlist("companion_phone[]")
+    terms_accepted = request.form.get("terms_accepted", "").strip()
 
     if not holder_name:
         flash("O nome do titular é obrigatório.", "error")
         return redirect(url_for("reservation_page"))
 
+    if not holder_email:
+        flash("O e-mail do titular é obrigatório.", "error")
+        return redirect(url_for("reservation_page"))
+
     if not holder_phone:
         flash("O telefone do titular é obrigatório.", "error")
+        return redirect(url_for("reservation_page"))
+
+    if terms_accepted != "yes":
+        flash("É necessário aceitar os termos antes de confirmar.", "error")
         return redirect(url_for("reservation_page"))
 
     companions = []
@@ -326,7 +457,19 @@ def create_reservation():
         if cleaned_name:
             companions.append({"name": cleaned_name, "phone": cleaned_phone})
 
-    store.create_reservation(holder_name, holder_phone, companions)
+    reservation = store.create_reservation(
+        holder_name,
+        holder_email,
+        holder_phone,
+        companions,
+        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+    )
+
+    try:
+        send_confirmation_email(reservation)
+    except Exception:
+        pass
+
     flash("Reserva salva com sucesso.", "success")
     return redirect(url_for("reservation_page"))
 
@@ -339,11 +482,20 @@ def export_excel():
     workbook = Workbook()
     reservation_sheet = workbook.active
     reservation_sheet.title = "Titulares"
-    reservation_sheet.append(["Reserva", "Nome do titular", "Telefone", "Criado em"])
+    reservation_sheet.append(
+        ["Reserva", "Nome do titular", "E-mail", "Telefone", "Criado em", "Termos aceitos em"]
+    )
 
     for row in reservations:
         reservation_sheet.append(
-            [row["id"], row["holder_name"], row["holder_phone"], row["created_at"]]
+            [
+                row["id"],
+                row["holder_name"],
+                row["holder_email"],
+                row["holder_phone"],
+                row["created_at"],
+                row["terms_accepted_at"],
+            ]
         )
 
     companion_sheet = workbook.create_sheet("Acompanhantes")

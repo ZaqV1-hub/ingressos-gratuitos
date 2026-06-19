@@ -12,5 +12,23 @@ services:
         value: firebase
       - key: SECRET_KEY
         generateValue: true
+      - key: PANEL_USERNAME
+        value: operador5979
+      - key: PANEL_PASSWORD
+        value: reservas10
       - key: FIREBASE_SERVICE_ACCOUNT_JSON_BASE64
         sync: false
+      - key: ZOHO_SMTP_HOST
+        value: smtp.zoho.com
+      - key: ZOHO_SMTP_PORT
+        value: 465
+      - key: ZOHO_SMTP_USERNAME
+        sync: false
+      - key: ZOHO_SMTP_PASSWORD
+        sync: false
+      - key: ZOHO_SMTP_FROM_EMAIL
+        sync: false
+      - key: ZOHO_SMTP_FROM_NAME
+        value: Clube Rincão
+      - key: ZOHO_SMTP_USE_SSL
+        value: true

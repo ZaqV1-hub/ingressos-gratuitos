@@ -7,70 +7,163 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
   </head>
   <body>
-    <main class="page reservation-page">
-      {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-          <section class="flash-list reservation-alerts">
-            {% for category, message in messages %}
-              <div class="flash-message flash-{{ category }}">{{ message }}</div>
-            {% endfor %}
-          </section>
-        {% endif %}
-      {% endwith %}
+    <div class="reservation-layout">
+      <section class="hero-banner">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <div class="brand-badge">
+            <span class="brand-mini">Clube e Park</span>
+            <strong>RINCÃO</strong>
+            <span class="brand-mini">Pousada e Lazer</span>
+          </div>
 
-      <section class="form-card reservation-card">
-        <header class="form-header">
-          <h1>{{ reservation_title }}</h1>
-          <p>{{ reservation_subtitle }}</p>
-        </header>
+          <div class="hero-copy">
+            <p class="hero-date">Family Day | {{ event_date_label }}</p>
+            <h1>Reservar ficou<br />ainda mais fácil!</h1>
+            <p>
+              Preencha os dados abaixo e garanta seus ingressos para aproveitar o
+              Rincão.
+            </p>
+          </div>
 
-        <form method="post" action="{{ url_for('create_reservation') }}" class="reservation-form">
-          <section class="form-section">
-            <div class="section-title">
-              <div class="section-badge">+</div>
-              <div>
-                <h2>Titular da Reserva</h2>
+          <div class="hero-points">
+            <article>
+              <span class="hero-icon">✓</span>
+              <strong>Rápido</strong>
+              <p>Preencha em poucos passos</p>
+            </article>
+            <article>
+              <span class="hero-icon">⛨</span>
+              <strong>Seguro</strong>
+              <p>Seus dados protegidos</p>
+            </article>
+            <article>
+              <span class="hero-icon">👥</span>
+              <strong>Para todos</strong>
+              <p>Adicione quantos acompanhantes quiser</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="page reservation-page page-overlap">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <section class="flash-list reservation-alerts">
+              {% for category, message in messages %}
+                <div class="flash-message flash-{{ category }}">{{ message }}</div>
+              {% endfor %}
+            </section>
+          {% endif %}
+        {% endwith %}
+
+        <section class="form-card reservation-card">
+          <header class="form-header">
+            <h2>{{ reservation_title }}</h2>
+            <p>{{ reservation_subtitle }}</p>
+          </header>
+
+          <form
+            method="post"
+            action="{{ url_for('create_reservation') }}"
+            class="reservation-form"
+            id="reservation-form"
+          >
+            <section class="form-section">
+              <div class="section-title">
+                <div class="section-badge">●</div>
+                <div>
+                  <h3>Titular da Reserva</h3>
+                </div>
               </div>
-            </div>
 
-              <div class="form-grid">
+              <div class="form-grid form-grid-3">
                 <label>
                   <span>Nome do titular <b>*</b></span>
                   <input type="text" name="holder_name" placeholder="Digite o nome completo" required />
+                </label>
+                <label>
+                  <span>E-mail do titular <b>*</b></span>
+                  <input type="email" name="holder_email" placeholder="voce@email.com" required />
                 </label>
                 <label>
                   <span>Telefone <b>*</b></span>
                   <input type="text" name="holder_phone" placeholder="(11) 99999-9999" required />
                 </label>
               </div>
-          </section>
+            </section>
 
-          <section class="form-section form-section-bordered">
-            <div class="section-title">
-              <div class="section-badge">+</div>
-              <div>
-                <h2>Acompanhantes</h2>
-                <p>Adicione quantos acompanhantes quiser</p>
+            <section class="form-section form-section-bordered">
+              <div class="section-title">
+                <div class="section-badge">●</div>
+                <div>
+                  <h3>Acompanhantes</h3>
+                  <p>Adicione quantos acompanhantes quiser</p>
+                </div>
               </div>
-            </div>
 
-            <div id="companions-list" class="companions-list"></div>
+              <div id="companions-list" class="companions-list"></div>
 
-            <button type="button" class="secondary-button" id="add-companion">
-              Adicionar acompanhante
+              <button type="button" class="secondary-button" id="add-companion">
+                Adicionar acompanhante
+              </button>
+            </section>
+
+            <input type="hidden" name="terms_accepted" id="terms_accepted" value="" />
+
+            <button type="button" class="primary-button large-button" id="open-terms-modal">
+              Confirmar Reserva
             </button>
-          </section>
+          </form>
+        </section>
 
-          <button type="submit" class="primary-button large-button">Confirmar Reserva</button>
-        </form>
+        <section class="trust-bar">
+          <article>
+            <strong>Ambiente 100% seguro</strong>
+            <p>Seus dados estão protegidos</p>
+          </article>
+          <article>
+            <strong>Processo rápido</strong>
+            <p>Reserva concluída em minutos</p>
+          </article>
+          <article>
+            <strong>Confirmação imediata</strong>
+            <p>Você recebe por e-mail</p>
+          </article>
+        </section>
       </section>
-    </main>
+    </div>
+
+    <div class="modal-backdrop" id="terms-modal" hidden>
+      <div class="terms-modal" role="dialog" aria-modal="true" aria-labelledby="terms-title">
+        <div class="terms-modal-header">
+          <h3 id="terms-title">Termos de uso</h3>
+          <button type="button" class="modal-close" id="close-terms-modal">×</button>
+        </div>
+
+        <div class="terms-scroll">
+          <pre class="terms-text">{{ terms_text }}</pre>
+        </div>
+
+        <label class="terms-check">
+          <input type="checkbox" id="terms-checkbox" />
+          <span>Li e aceito os termos de uso acima.</span>
+        </label>
+
+        <div class="terms-actions">
+          <button type="button" class="secondary-button" id="cancel-terms-modal">Cancelar</button>
+          <button type="button" class="primary-button" id="confirm-terms-button" disabled>
+            Aceito e confirmar
+          </button>
+        </div>
+      </div>
+    </div>
 
     <template id="companion-template">
       <div class="companion-row">
@@ -90,6 +183,14 @@
       const addButton = document.getElementById("add-companion");
       const list = document.getElementById("companions-list");
       const template = document.getElementById("companion-template");
+      const form = document.getElementById("reservation-form");
+      const modal = document.getElementById("terms-modal");
+      const openTermsButton = document.getElementById("open-terms-modal");
+      const closeTermsButton = document.getElementById("close-terms-modal");
+      const cancelTermsButton = document.getElementById("cancel-terms-modal");
+      const confirmTermsButton = document.getElementById("confirm-terms-button");
+      const termsCheckbox = document.getElementById("terms-checkbox");
+      const acceptedInput = document.getElementById("terms_accepted");
 
       function bindRemove(button) {
         button.addEventListener("click", () => {
@@ -102,6 +203,36 @@
         const removeButton = fragment.querySelector(".remove-button");
         bindRemove(removeButton);
         list.appendChild(fragment);
+      });
+
+      function closeModal() {
+        modal.hidden = true;
+      }
+
+      function openModal() {
+        if (!form.reportValidity()) {
+          return;
+        }
+        modal.hidden = false;
+      }
+
+      openTermsButton.addEventListener("click", openModal);
+      closeTermsButton.addEventListener("click", closeModal);
+      cancelTermsButton.addEventListener("click", closeModal);
+
+      termsCheckbox.addEventListener("change", () => {
+        confirmTermsButton.disabled = !termsCheckbox.checked;
+      });
+
+      confirmTermsButton.addEventListener("click", () => {
+        acceptedInput.value = "yes";
+        form.submit();
+      });
+
+      modal.addEventListener("click", (event) => {
+        if (event.target === modal) {
+          closeModal();
+        }
       });
     </script>
   </body>

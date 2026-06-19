@@ -19,7 +19,7 @@
           <div>
             <h1>Painel de Reservas</h1>
             <div class="date-line">
-              <span class="date-icon">+</span>
+              <span class="date-icon">●</span>
               <p>{{ event_date_label }}</p>
             </div>
           </div>
@@ -33,21 +33,21 @@
 
         <section class="stats-grid">
           <article class="stat-card stat-green">
-            <div class="stat-icon">+</div>
+            <div class="stat-icon">●</div>
             <div>
               <p>Quantidade de pessoas previstas</p>
               <strong>{{ stats.total_people }}</strong>
             </div>
           </article>
           <article class="stat-card stat-blue">
-            <div class="stat-icon">+</div>
+            <div class="stat-icon">●</div>
             <div>
               <p>Titulares registrados</p>
               <strong>{{ stats.holder_count }}</strong>
             </div>
           </article>
           <article class="stat-card stat-purple">
-            <div class="stat-icon">+</div>
+            <div class="stat-icon">●</div>
             <div>
               <p>Acompanhantes registrados</p>
               <strong>{{ stats.companion_count }}</strong>
@@ -59,7 +59,7 @@
           <div class="table-head">
             <h2>Lista de Reservas</h2>
             <label class="search-box">
-              <input id="search-input" type="text" placeholder="Buscar por nome ou telefone..." />
+              <input id="search-input" type="text" placeholder="Buscar por nome, e-mail ou telefone..." />
             </label>
           </div>
 
@@ -70,6 +70,7 @@
                   <tr>
                     <th>#</th>
                     <th>Titular</th>
+                    <th>E-mail</th>
                     <th>Telefone</th>
                     <th>Total pessoas</th>
                     <th>Data/Hora</th>
@@ -77,18 +78,19 @@
                 </thead>
                 <tbody>
                   {% for reservation in reservations %}
-                    <tr class="reservation-row" data-search="{{ reservation.holder_name|lower }} {{ reservation.holder_phone|lower }} {% for companion in reservation.companions %} {{ companion.name|lower }} {{ companion.phone|lower }} {% endfor %}">
+                    <tr class="reservation-row" data-search="{{ reservation.holder_name|lower }} {{ reservation.holder_email|lower }} {{ reservation.holder_phone|lower }} {% for companion in reservation.companions %} {{ companion.name|lower }} {{ companion.phone|lower }} {% endfor %}">
                       <td class="id-cell">
                         <button type="button" class="toggle-button" data-target="details-{{ reservation.id }}">+</button>
                         <span>{{ reservation.id }}</span>
                       </td>
                       <td>{{ reservation.holder_name }}</td>
+                      <td>{{ reservation.holder_email or "—" }}</td>
                       <td>{{ reservation.holder_phone or "—" }}</td>
                       <td><span class="people-badge">{{ reservation.total_people }}</span></td>
                       <td>{{ reservation.created_at_display }}</td>
                     </tr>
                     <tr id="details-{{ reservation.id }}" class="details-row details-hidden">
-                      <td colspan="5">
+                      <td colspan="6">
                         <div class="details-panel">
                           <h3>Acompanhantes ({{ reservation.companions|length }})</h3>
                           {% if reservation.companions %}
