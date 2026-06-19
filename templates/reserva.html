@@ -18,33 +18,35 @@
         <div class="hero-overlay"></div>
         <div class="hero-content">
           <div class="brand-badge">
-            <span class="brand-mini">Clube e Park</span>
-            <strong>RINCÃO</strong>
-            <span class="brand-mini">Pousada e Lazer</span>
+            <img
+              src="{{ url_for('static', filename='images/clube-park-rincao-pousada-lazer.png') }}"
+              alt="Clube e Park Rincao Pousada e Lazer"
+              class="brand-logo"
+            />
           </div>
 
           <div class="hero-copy">
             <p class="hero-date">Family Day | {{ event_date_label }}</p>
-            <h1>Reservar ficou<br />ainda mais fácil!</h1>
+            <h1>Reservar ficou<br />ainda mais facil!</h1>
             <p>
               Preencha os dados abaixo e garanta seus ingressos para aproveitar o
-              Rincão.
+              Rincao.
             </p>
           </div>
 
           <div class="hero-points">
             <article>
-              <span class="hero-icon">✓</span>
-              <strong>Rápido</strong>
+              <span class="hero-icon">+</span>
+              <strong>Rapido</strong>
               <p>Preencha em poucos passos</p>
             </article>
             <article>
-              <span class="hero-icon">⛨</span>
+              <span class="hero-icon">+</span>
               <strong>Seguro</strong>
               <p>Seus dados protegidos</p>
             </article>
             <article>
-              <span class="hero-icon">👥</span>
+              <span class="hero-icon">+</span>
               <strong>Para todos</strong>
               <p>Adicione quantos acompanhantes quiser</p>
             </article>
@@ -77,7 +79,7 @@
           >
             <section class="form-section">
               <div class="section-title">
-                <div class="section-badge">●</div>
+                <div class="section-badge">+</div>
                 <div>
                   <h3>Titular da Reserva</h3>
                 </div>
@@ -101,7 +103,7 @@
 
             <section class="form-section form-section-bordered">
               <div class="section-title">
-                <div class="section-badge">●</div>
+                <div class="section-badge">+</div>
                 <div>
                   <h3>Acompanhantes</h3>
                   <p>Adicione quantos acompanhantes quiser</p>
@@ -126,15 +128,15 @@
         <section class="trust-bar">
           <article>
             <strong>Ambiente 100% seguro</strong>
-            <p>Seus dados estão protegidos</p>
+            <p>Seus dados estao protegidos</p>
           </article>
           <article>
-            <strong>Processo rápido</strong>
-            <p>Reserva concluída em minutos</p>
+            <strong>Processo rapido</strong>
+            <p>Reserva concluida em minutos</p>
           </article>
           <article>
-            <strong>Confirmação imediata</strong>
-            <p>Você recebe por e-mail</p>
+            <strong>Confirmacao imediata</strong>
+            <p>Voce recebe por e-mail</p>
           </article>
         </section>
       </section>
@@ -144,7 +146,7 @@
       <div class="terms-modal" role="dialog" aria-modal="true" aria-labelledby="terms-title">
         <div class="terms-modal-header">
           <h3 id="terms-title">Termos de uso</h3>
-          <button type="button" class="modal-close" id="close-terms-modal">×</button>
+          <button type="button" class="modal-close" id="close-terms-modal">x</button>
         </div>
 
         <div class="terms-scroll">
@@ -206,6 +208,8 @@
       });
 
       function closeModal() {
+        termsCheckbox.checked = false;
+        confirmTermsButton.disabled = true;
         modal.hidden = true;
       }
 
@@ -213,6 +217,9 @@
         if (!form.reportValidity()) {
           return;
         }
+        acceptedInput.value = "";
+        termsCheckbox.checked = false;
+        confirmTermsButton.disabled = true;
         modal.hidden = false;
       }
 

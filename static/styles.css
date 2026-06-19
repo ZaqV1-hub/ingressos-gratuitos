@@ -137,27 +137,19 @@ input {
 
 .brand-badge {
   display: inline-flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: center;
+  justify-content: center;
   align-self: start;
-  padding: 14px 18px;
+  padding: 18px 22px;
   border-radius: 22px;
   background: rgba(255, 255, 255, 0.08);
-  color: #fff4df;
   backdrop-filter: blur(8px);
 }
 
-.brand-badge strong {
-  font-size: 3rem;
-  line-height: 0.92;
-  letter-spacing: 0.02em;
-  color: #fff2da;
-  text-shadow: 0 3px 14px rgba(0, 0, 0, 0.22);
-}
-
-.brand-mini {
-  font-size: 1.15rem;
-  font-weight: 700;
+.brand-logo {
+  display: block;
+  width: min(100%, 290px);
+  height: auto;
 }
 
 .hero-copy {
@@ -443,6 +435,10 @@ input:focus {
   justify-content: center;
   padding: 24px;
   background: rgba(10, 20, 38, 0.58);
+}
+
+.modal-backdrop[hidden] {
+  display: none !important;
 }
 
 .terms-modal {
@@ -763,8 +759,8 @@ input:focus {
     padding-bottom: 90px;
   }
 
-  .brand-badge strong {
-    font-size: 2.3rem;
+  .brand-logo {
+    width: min(100%, 220px);
   }
 
   .shell,
