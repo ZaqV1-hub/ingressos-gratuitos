@@ -97,7 +97,7 @@ input {
 
 .hero-banner {
   position: relative;
-  min-height: 460px;
+  min-height: 360px;
   overflow: hidden;
   background:
     linear-gradient(90deg, rgba(6, 28, 21, 0.95) 0%, rgba(8, 40, 27, 0.86) 42%, rgba(25, 52, 34, 0.55) 70%, rgba(30, 45, 32, 0.45) 100%),
@@ -128,10 +128,10 @@ input {
   margin: 0 auto;
   position: relative;
   z-index: 1;
-  padding: 34px 0 124px;
+  padding: 24px 0 78px;
   display: grid;
-  grid-template-columns: 250px minmax(0, 1fr) 420px;
-  gap: 28px;
+  grid-template-columns: 220px minmax(0, 1fr) 330px;
+  gap: 20px;
   align-items: start;
 }
 
@@ -140,7 +140,7 @@ input {
   align-items: center;
   justify-content: center;
   align-self: start;
-  padding: 18px 22px;
+  padding: 14px 18px;
   border-radius: 22px;
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(8px);
@@ -148,18 +148,18 @@ input {
 
 .brand-logo {
   display: block;
-  width: min(100%, 290px);
+  width: min(100%, 230px);
   height: auto;
 }
 
 .hero-copy {
   color: #ffffff;
-  padding-top: 16px;
+  padding-top: 8px;
 }
 
 .hero-date {
-  margin-bottom: 12px;
-  font-size: 0.98rem;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -167,16 +167,16 @@ input {
 }
 
 .hero-copy h1 {
-  font-size: clamp(2.9rem, 5vw, 4.7rem);
+  font-size: clamp(2.2rem, 4.2vw, 3.6rem);
   line-height: 0.98;
-  margin: 0 0 16px;
+  margin: 0 0 12px;
 }
 
 .hero-copy p {
   max-width: 520px;
   margin: 0;
-  font-size: 1.35rem;
-  line-height: 1.45;
+  font-size: 1.1rem;
+  line-height: 1.35;
   color: rgba(255, 255, 255, 0.9);
 }
 
@@ -189,8 +189,8 @@ input {
 }
 
 .hero-points article {
-  padding: 18px 16px;
-  border-radius: 24px;
+  padding: 14px;
+  border-radius: 20px;
   background: rgba(255, 255, 255, 0.08);
   color: #fff;
   backdrop-filter: blur(6px);
@@ -200,26 +200,26 @@ input {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 54px;
-  height: 54px;
-  margin-bottom: 14px;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 10px;
   border-radius: 50%;
   border: 2px solid rgba(100, 255, 132, 0.72);
   color: #65ff8d;
-  font-size: 1.5rem;
+  font-size: 1.15rem;
   font-weight: 800;
 }
 
 .hero-points strong {
   display: block;
-  font-size: 1.65rem;
-  margin-bottom: 6px;
+  font-size: 1.25rem;
+  margin-bottom: 4px;
 }
 
 .hero-points p {
   margin: 0;
-  font-size: 1rem;
-  line-height: 1.35;
+  font-size: 0.9rem;
+  line-height: 1.25;
   color: rgba(255, 255, 255, 0.82);
 }
 
@@ -710,7 +710,7 @@ input:focus {
 @media (max-width: 1120px) {
   .hero-content {
     grid-template-columns: 1fr;
-    padding-bottom: 110px;
+    padding-bottom: 56px;
   }
 
   .hero-points {
@@ -729,35 +729,35 @@ input:focus {
   }
 
   .page-overlap {
-    margin-top: -28px;
+    margin-top: -18px;
   }
 
   .hero-copy h1 {
-    font-size: 2.3rem;
+    font-size: 2rem;
   }
 
   .hero-copy p {
-    font-size: 1rem;
+    font-size: 0.96rem;
   }
 
   .hero-points {
     grid-template-columns: 1fr;
-    gap: 12px;
+    gap: 10px;
   }
 
   .hero-points article {
-    padding: 14px;
+    padding: 12px;
   }
 
   .hero-icon {
-    width: 44px;
-    height: 44px;
-    margin-bottom: 10px;
-    font-size: 1.15rem;
+    width: 40px;
+    height: 40px;
+    margin-bottom: 8px;
+    font-size: 1rem;
   }
 
   .hero-points strong {
-    font-size: 1.35rem;
+    font-size: 1.15rem;
   }
 
   .form-header h2,
@@ -797,17 +797,22 @@ input:focus {
 @media (max-width: 640px) {
   .hero-content {
     width: min(100% - 18px, 1420px);
-    padding-top: 16px;
-    padding-bottom: 58px;
-    gap: 18px;
+    padding-top: 12px;
+    padding-bottom: 22px;
+    gap: 12px;
   }
 
   .hero-banner {
-    min-height: 360px;
+    min-height: 230px;
   }
 
   .brand-logo {
-    width: min(100%, 190px);
+    width: min(100%, 150px);
+  }
+
+  .brand-badge {
+    padding: 10px 12px;
+    border-radius: 16px;
   }
 
   .shell,
@@ -835,12 +840,16 @@ input:focus {
   }
 
   .hero-copy h1 {
-    font-size: 2rem;
+    font-size: 1.55rem;
   }
 
   .hero-date {
-    margin-bottom: 8px;
-    font-size: 0.82rem;
+    margin-bottom: 6px;
+    font-size: 0.72rem;
+  }
+
+  .hero-points {
+    display: none;
   }
 
   .section-title {

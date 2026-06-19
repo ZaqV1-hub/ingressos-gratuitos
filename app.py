@@ -5,6 +5,7 @@ import io
 import json
 import os
 import smtplib
+import threading
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta, timezone
 from email.message import EmailMessage
@@ -64,6 +65,7 @@ ZOHO_SMTP_USE_SSL = os.getenv("ZOHO_SMTP_USE_SSL", "true").strip().lower() in {
     "true",
     "yes",
 }
+EMAIL_SEND_TIMEOUT_SECONDS = int(os.getenv("EMAIL_SEND_TIMEOUT_SECONDS", "8"))
 IS_RENDER_ENV = bool(os.getenv("RENDER") or os.getenv("RENDER_EXTERNAL_URL"))
 
 TERMS_TEXT = """
@@ -361,17 +363,36 @@ Wagner Alves
         else ZOHO_SMTP_FROM_EMAIL
     )
     message["To"] = reservation["holder_email"]
+    message["Reply-To"] = ZOHO_SMTP_FROM_EMAIL
     message.set_content(body)
 
     if ZOHO_SMTP_USE_SSL:
-        with smtplib.SMTP_SSL(ZOHO_SMTP_HOST, ZOHO_SMTP_PORT, timeout=30) as smtp:
+        with smtplib.SMTP_SSL(
+            ZOHO_SMTP_HOST,
+            ZOHO_SMTP_PORT,
+            timeout=EMAIL_SEND_TIMEOUT_SECONDS,
+        ) as smtp:
             smtp.login(ZOHO_SMTP_USERNAME, ZOHO_SMTP_PASSWORD)
             smtp.send_message(message)
     else:
-        with smtplib.SMTP(ZOHO_SMTP_HOST, ZOHO_SMTP_PORT, timeout=30) as smtp:
+        with smtplib.SMTP(
+            ZOHO_SMTP_HOST,
+            ZOHO_SMTP_PORT,
+            timeout=EMAIL_SEND_TIMEOUT_SECONDS,
+        ) as smtp:
             smtp.starttls()
             smtp.login(ZOHO_SMTP_USERNAME, ZOHO_SMTP_PASSWORD)
             smtp.send_message(message)
+
+
+def send_confirmation_email_async(reservation: dict[str, Any]) -> None:
+    def run() -> None:
+        try:
+            send_confirmation_email(reservation)
+        except Exception:
+            app.logger.exception("Falha ao enviar e-mail de confirmação.")
+
+    threading.Thread(target=run, daemon=True).start()
 
 
 @app.route("/", methods=["GET"])
@@ -471,12 +492,8 @@ def create_reservation():
         current_timestamp(),
     )
 
-    try:
-        send_confirmation_email(reservation)
-    except Exception:
-        pass
-
-    flash("Reserva salva com sucesso.", "success")
+    send_confirmation_email_async(reservation)
+    flash("Reserva salva com sucesso. O e-mail de confirmação será enviado em instantes.", "success")
     return redirect(url_for("reservation_page"))
 
 
