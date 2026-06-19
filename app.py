@@ -367,23 +367,32 @@ Wagner Alves
         message["Bcc"] = ZOHO_SMTP_FROM_EMAIL
     message.set_content(body)
 
-    if ZOHO_SMTP_USE_SSL:
-        with smtplib.SMTP_SSL(
-            ZOHO_SMTP_HOST,
-            ZOHO_SMTP_PORT,
-            timeout=EMAIL_SEND_TIMEOUT_SECONDS,
-        ) as smtp:
-            smtp.login(ZOHO_SMTP_USERNAME, ZOHO_SMTP_PASSWORD)
-            smtp.send_message(message)
-    else:
-        with smtplib.SMTP(
-            ZOHO_SMTP_HOST,
-            ZOHO_SMTP_PORT,
-            timeout=EMAIL_SEND_TIMEOUT_SECONDS,
-        ) as smtp:
-            smtp.starttls()
-            smtp.login(ZOHO_SMTP_USERNAME, ZOHO_SMTP_PASSWORD)
-            smtp.send_message(message)
+    attempts: list[tuple[str, int, bool]] = []
+    attempts.append((ZOHO_SMTP_HOST, ZOHO_SMTP_PORT, ZOHO_SMTP_USE_SSL))
+    if (ZOHO_SMTP_HOST, 587, False) not in attempts:
+        attempts.append((ZOHO_SMTP_HOST, 587, False))
+    if (ZOHO_SMTP_HOST, 465, True) not in attempts:
+        attempts.append((ZOHO_SMTP_HOST, 465, True))
+
+    last_error: Exception | None = None
+    for host, port, use_ssl in attempts:
+        try:
+            if use_ssl:
+                with smtplib.SMTP_SSL(host, port, timeout=EMAIL_SEND_TIMEOUT_SECONDS) as smtp:
+                    smtp.login(ZOHO_SMTP_USERNAME, ZOHO_SMTP_PASSWORD)
+                    smtp.send_message(message)
+                    return
+            else:
+                with smtplib.SMTP(host, port, timeout=EMAIL_SEND_TIMEOUT_SECONDS) as smtp:
+                    smtp.starttls()
+                    smtp.login(ZOHO_SMTP_USERNAME, ZOHO_SMTP_PASSWORD)
+                    smtp.send_message(message)
+                    return
+        except Exception as exc:
+            last_error = exc
+
+    if last_error is not None:
+        raise last_error
 
 
 @app.route("/", methods=["GET"])

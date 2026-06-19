@@ -45,7 +45,7 @@ input {
 }
 
 .page-overlap {
-  margin-top: -72px;
+  margin-top: -26px;
   position: relative;
   z-index: 2;
 }
@@ -97,7 +97,7 @@ input {
 
 .hero-banner {
   position: relative;
-  min-height: 360px;
+  min-height: 220px;
   overflow: hidden;
   background:
     linear-gradient(90deg, rgba(6, 28, 21, 0.95) 0%, rgba(8, 40, 27, 0.86) 42%, rgba(25, 52, 34, 0.55) 70%, rgba(30, 45, 32, 0.45) 100%),
@@ -128,10 +128,10 @@ input {
   margin: 0 auto;
   position: relative;
   z-index: 1;
-  padding: 24px 0 78px;
+  padding: 14px 0 28px;
   display: grid;
-  grid-template-columns: 220px minmax(0, 1fr) 330px;
-  gap: 20px;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: 14px;
   align-items: start;
 }
 
@@ -140,26 +140,26 @@ input {
   align-items: center;
   justify-content: center;
   align-self: start;
-  padding: 14px 18px;
-  border-radius: 22px;
+  padding: 10px 12px;
+  border-radius: 18px;
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(8px);
 }
 
 .brand-logo {
   display: block;
-  width: min(100%, 230px);
+  width: min(100%, 160px);
   height: auto;
 }
 
 .hero-copy {
   color: #ffffff;
-  padding-top: 8px;
+  padding-top: 2px;
 }
 
 .hero-date {
-  margin-bottom: 8px;
-  font-size: 0.9rem;
+  margin-bottom: 6px;
+  font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -167,60 +167,21 @@ input {
 }
 
 .hero-copy h1 {
-  font-size: clamp(2.2rem, 4.2vw, 3.6rem);
-  line-height: 0.98;
-  margin: 0 0 12px;
+  font-size: clamp(1.7rem, 3vw, 2.6rem);
+  line-height: 0.96;
+  margin: 0 0 8px;
 }
 
 .hero-copy p {
   max-width: 520px;
   margin: 0;
-  font-size: 1.1rem;
-  line-height: 1.35;
+  font-size: 0.96rem;
+  line-height: 1.25;
   color: rgba(255, 255, 255, 0.9);
 }
 
 .hero-points {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-  align-self: center;
-  grid-column: 2 / 4;
-}
-
-.hero-points article {
-  padding: 14px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
-  backdrop-filter: blur(6px);
-}
-
-.hero-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  margin-bottom: 10px;
-  border-radius: 50%;
-  border: 2px solid rgba(100, 255, 132, 0.72);
-  color: #65ff8d;
-  font-size: 1.15rem;
-  font-weight: 800;
-}
-
-.hero-points strong {
-  display: block;
-  font-size: 1.25rem;
-  margin-bottom: 4px;
-}
-
-.hero-points p {
-  margin: 0;
-  font-size: 0.9rem;
-  line-height: 1.25;
-  color: rgba(255, 255, 255, 0.82);
+  display: none;
 }
 
 .form-header {
@@ -709,12 +670,8 @@ input:focus {
 
 @media (max-width: 1120px) {
   .hero-content {
-    grid-template-columns: 1fr;
-    padding-bottom: 56px;
-  }
-
-  .hero-points {
-    grid-column: auto;
+    grid-template-columns: 160px minmax(0, 1fr);
+    padding-bottom: 22px;
   }
 
   .form-grid-3 {
@@ -729,35 +686,15 @@ input:focus {
   }
 
   .page-overlap {
-    margin-top: -18px;
+    margin-top: -10px;
   }
 
   .hero-copy h1 {
-    font-size: 2rem;
+    font-size: 1.7rem;
   }
 
   .hero-copy p {
-    font-size: 0.96rem;
-  }
-
-  .hero-points {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
-
-  .hero-points article {
-    padding: 12px;
-  }
-
-  .hero-icon {
-    width: 40px;
-    height: 40px;
-    margin-bottom: 8px;
-    font-size: 1rem;
-  }
-
-  .hero-points strong {
-    font-size: 1.15rem;
+    font-size: 0.9rem;
   }
 
   .form-header h2,
@@ -797,22 +734,23 @@ input:focus {
 @media (max-width: 640px) {
   .hero-content {
     width: min(100% - 18px, 1420px);
-    padding-top: 12px;
-    padding-bottom: 22px;
-    gap: 12px;
+    padding-top: 8px;
+    padding-bottom: 12px;
+    gap: 10px;
+    grid-template-columns: 1fr;
   }
 
   .hero-banner {
-    min-height: 230px;
+    min-height: 140px;
   }
 
   .brand-logo {
-    width: min(100%, 150px);
+    width: min(100%, 118px);
   }
 
   .brand-badge {
-    padding: 10px 12px;
-    border-radius: 16px;
+    padding: 8px 10px;
+    border-radius: 14px;
   }
 
   .shell,
@@ -840,16 +778,12 @@ input:focus {
   }
 
   .hero-copy h1 {
-    font-size: 1.55rem;
+    font-size: 1.18rem;
   }
 
   .hero-date {
-    margin-bottom: 6px;
-    font-size: 0.72rem;
-  }
-
-  .hero-points {
-    display: none;
+    margin-bottom: 4px;
+    font-size: 0.62rem;
   }
 
   .section-title {
