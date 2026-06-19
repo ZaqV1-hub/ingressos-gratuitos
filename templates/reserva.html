@@ -158,6 +158,10 @@
           <span>Li e aceito os termos de uso acima.</span>
         </label>
 
+        <p class="terms-warning" id="terms-warning" hidden>
+          Você precisa marcar o aceite dos termos para continuar.
+        </p>
+
         <div class="terms-actions">
           <button type="button" class="secondary-button" id="cancel-terms-modal">Cancelar</button>
           <button type="button" class="primary-button" id="confirm-terms-button" disabled>
@@ -193,6 +197,8 @@
       const confirmTermsButton = document.getElementById("confirm-terms-button");
       const termsCheckbox = document.getElementById("terms-checkbox");
       const acceptedInput = document.getElementById("terms_accepted");
+      const termsWarning = document.getElementById("terms-warning");
+      let isSubmitting = false;
 
       function bindRemove(button) {
         button.addEventListener("click", () => {
@@ -208,18 +214,32 @@
       });
 
       function closeModal() {
+        if (isSubmitting) {
+          return;
+        }
         termsCheckbox.checked = false;
         confirmTermsButton.disabled = true;
+        cancelTermsButton.disabled = false;
+        closeTermsButton.disabled = false;
+        confirmTermsButton.textContent = "Aceito e confirmar";
+        termsWarning.hidden = true;
         modal.hidden = true;
       }
 
       function openModal() {
+        if (isSubmitting) {
+          return;
+        }
         if (!form.reportValidity()) {
           return;
         }
         acceptedInput.value = "";
         termsCheckbox.checked = false;
         confirmTermsButton.disabled = true;
+        cancelTermsButton.disabled = false;
+        closeTermsButton.disabled = false;
+        confirmTermsButton.textContent = "Aceito e confirmar";
+        termsWarning.hidden = true;
         modal.hidden = false;
       }
 
@@ -228,12 +248,40 @@
       cancelTermsButton.addEventListener("click", closeModal);
 
       termsCheckbox.addEventListener("change", () => {
+        termsWarning.hidden = termsCheckbox.checked;
         confirmTermsButton.disabled = !termsCheckbox.checked;
       });
 
       confirmTermsButton.addEventListener("click", () => {
+        if (isSubmitting) {
+          return;
+        }
+        if (!termsCheckbox.checked) {
+          termsWarning.hidden = false;
+          confirmTermsButton.disabled = true;
+          return;
+        }
+        isSubmitting = true;
         acceptedInput.value = "yes";
+        termsWarning.hidden = true;
+        confirmTermsButton.disabled = true;
+        cancelTermsButton.disabled = true;
+        closeTermsButton.disabled = true;
+        openTermsButton.disabled = true;
+        openTermsButton.textContent = "Enviando...";
+        confirmTermsButton.textContent = "Enviando...";
         form.submit();
+      });
+
+      form.addEventListener("submit", (event) => {
+        if (acceptedInput.value !== "yes" || isSubmitting) {
+          event.preventDefault();
+          if (acceptedInput.value !== "yes") {
+            openModal();
+            termsWarning.hidden = false;
+          }
+          return;
+        }
       });
 
       modal.addEventListener("click", (event) => {

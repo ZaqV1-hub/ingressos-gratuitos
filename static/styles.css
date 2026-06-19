@@ -362,6 +362,16 @@ input:focus {
   transition: transform 140ms ease, background 140ms ease;
 }
 
+.primary-button:disabled,
+.secondary-button:disabled,
+.remove-button:disabled,
+.export-button:disabled,
+.modal-close:disabled {
+  cursor: wait;
+  opacity: 0.72;
+  transform: none;
+}
+
 .primary-button,
 .export-button {
   background: linear-gradient(90deg, var(--green) 0%, #119849 100%);
@@ -516,6 +526,13 @@ input:focus {
 .terms-actions {
   justify-content: flex-end;
   gap: 12px;
+}
+
+.terms-warning {
+  margin: -6px 0 18px;
+  color: var(--danger);
+  font-size: 0.98rem;
+  font-weight: 600;
 }
 
 .topbar {
@@ -712,19 +729,44 @@ input:focus {
   }
 
   .page-overlap {
-    margin-top: -48px;
+    margin-top: -28px;
   }
 
   .hero-copy h1 {
-    font-size: 2.8rem;
+    font-size: 2.3rem;
   }
 
   .hero-copy p {
-    font-size: 1.15rem;
+    font-size: 1rem;
   }
 
   .hero-points {
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .hero-points article {
+    padding: 14px;
+  }
+
+  .hero-icon {
+    width: 44px;
+    height: 44px;
+    margin-bottom: 10px;
+    font-size: 1.15rem;
+  }
+
+  .hero-points strong {
+    font-size: 1.35rem;
+  }
+
+  .form-header h2,
+  .form-header h1 {
+    font-size: 2.1rem;
+  }
+
+  .section-title h3 {
+    font-size: 1.6rem;
   }
 
   .form-grid,
@@ -755,25 +797,114 @@ input:focus {
 @media (max-width: 640px) {
   .hero-content {
     width: min(100% - 18px, 1420px);
-    padding-top: 24px;
-    padding-bottom: 90px;
+    padding-top: 16px;
+    padding-bottom: 58px;
+    gap: 18px;
+  }
+
+  .hero-banner {
+    min-height: 360px;
   }
 
   .brand-logo {
-    width: min(100%, 220px);
+    width: min(100%, 190px);
   }
 
   .shell,
   .reservation-card,
   .table-card {
-    padding: 22px 16px;
+    padding: 18px 14px;
+  }
+
+  .form-header {
+    margin-bottom: 18px;
+  }
+
+  .form-header h2,
+  .form-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .form-header p,
+  .section-title p,
+  label,
+  .hero-copy p,
+  .hero-points p,
+  .trust-bar p {
+    font-size: 0.95rem;
+  }
+
+  .hero-copy h1 {
+    font-size: 2rem;
+  }
+
+  .hero-date {
+    margin-bottom: 8px;
+    font-size: 0.82rem;
+  }
+
+  .section-title {
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .section-badge {
+    width: 36px;
+    height: 36px;
+  }
+
+  .form-section {
+    padding: 12px 0 8px;
+  }
+
+  .companion-row,
+  .form-grid,
+  .form-grid-3 {
+    gap: 14px;
+  }
+
+  input {
+    padding: 14px 16px;
+    border-radius: 16px;
+    font-size: 1rem;
+  }
+
+  .secondary-button,
+  .export-button {
+    padding: 12px 18px;
+  }
+
+  .large-button {
+    min-height: 58px;
+    font-size: 1.15rem;
+    margin-top: 6px;
   }
 
   .terms-modal {
-    padding: 18px;
+    padding: 16px;
+    border-radius: 22px;
+  }
+
+  .terms-modal-header h3 {
+    font-size: 1.55rem;
   }
 
   .terms-scroll {
-    max-height: 300px;
+    max-height: 220px;
+    padding: 14px;
+  }
+
+  .terms-text {
+    font-size: 0.94rem;
+    line-height: 1.5;
+  }
+
+  .trust-bar {
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .trust-bar strong {
+    font-size: 1rem;
   }
 }

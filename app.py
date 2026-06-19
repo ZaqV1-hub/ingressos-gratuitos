@@ -6,7 +6,7 @@ import json
 import os
 import smtplib
 from abc import ABC, abstractmethod
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from email.message import EmailMessage
 from functools import wraps
 from pathlib import Path
@@ -45,6 +45,7 @@ DATA_DIR.mkdir(parents=True, exist_ok=True)
 DATA_FILE = DATA_DIR / "reservas.json"
 APP_PORT = int(os.getenv("PORT", os.getenv("APP_PORT", "5001")))
 STORAGE_BACKEND = os.getenv("STORAGE_BACKEND", "local").strip().lower()
+APP_UTC_OFFSET_HOURS = float(os.getenv("APP_UTC_OFFSET_HOURS", "-3"))
 
 EVENT_DATE_LABEL = "28 de junho de 2026"
 PANEL_TITLE = "Painel de Reservas"
@@ -87,6 +88,11 @@ Wagner Alves
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "reserva-local-simples")
 STORE_MODE = "local"
+
+
+def current_timestamp() -> str:
+    app_timezone = timezone(timedelta(hours=APP_UTC_OFFSET_HOURS))
+    return datetime.now(app_timezone).strftime("%Y-%m-%d %H:%M:%S")
 
 
 def format_datetime(value: str) -> str:
@@ -151,7 +157,7 @@ class LocalJsonStore(ReservationStore):
             "holder_name": holder_name,
             "holder_email": holder_email,
             "holder_phone": holder_phone,
-            "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "created_at": current_timestamp(),
             "terms_accepted_at": terms_accepted_at,
             "companions": companions,
         }
@@ -229,7 +235,7 @@ class FirestoreStore(ReservationStore):
                 "holder_name": holder_name,
                 "holder_email": holder_email,
                 "holder_phone": holder_phone,
-                "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "created_at": current_timestamp(),
                 "terms_accepted_at": terms_accepted_at,
                 "companions": companions,
             }
@@ -462,7 +468,7 @@ def create_reservation():
         holder_email,
         holder_phone,
         companions,
-        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        current_timestamp(),
     )
 
     try:
