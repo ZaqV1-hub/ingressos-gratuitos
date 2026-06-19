@@ -64,7 +64,7 @@ ZOHO_SMTP_USE_SSL = os.getenv("ZOHO_SMTP_USE_SSL", "true").strip().lower() in {
     "true",
     "yes",
 }
-EMAIL_SEND_TIMEOUT_SECONDS = int(os.getenv("EMAIL_SEND_TIMEOUT_SECONDS", "8"))
+EMAIL_SEND_TIMEOUT_SECONDS = int(os.getenv("EMAIL_SEND_TIMEOUT_SECONDS", "20"))
 IS_RENDER_ENV = bool(os.getenv("RENDER") or os.getenv("RENDER_EXTERNAL_URL"))
 
 TERMS_TEXT = """
@@ -384,7 +384,9 @@ Wagner Alves
                     return
             else:
                 with smtplib.SMTP(host, port, timeout=EMAIL_SEND_TIMEOUT_SECONDS) as smtp:
+                    smtp.ehlo()
                     smtp.starttls()
+                    smtp.ehlo()
                     smtp.login(ZOHO_SMTP_USERNAME, ZOHO_SMTP_PASSWORD)
                     smtp.send_message(message)
                     return

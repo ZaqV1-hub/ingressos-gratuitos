@@ -5,4 +5,5 @@ __pycache__/
 serviceAccount.json
 *-firebase-adminsdk-*.json
 outputs/render.env
+outputs/render-pronto.env
 work/data/

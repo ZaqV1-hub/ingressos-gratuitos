@@ -45,7 +45,7 @@ input {
 }
 
 .page-overlap {
-  margin-top: -26px;
+  margin-top: -48px;
   position: relative;
   z-index: 2;
 }
@@ -97,7 +97,7 @@ input {
 
 .hero-banner {
   position: relative;
-  min-height: 220px;
+  min-height: 300px;
   overflow: hidden;
   background:
     linear-gradient(90deg, rgba(6, 28, 21, 0.95) 0%, rgba(8, 40, 27, 0.86) 42%, rgba(25, 52, 34, 0.55) 70%, rgba(30, 45, 32, 0.45) 100%),
@@ -128,10 +128,10 @@ input {
   margin: 0 auto;
   position: relative;
   z-index: 1;
-  padding: 14px 0 28px;
+  padding: 22px 0 62px;
   display: grid;
-  grid-template-columns: 180px minmax(0, 1fr);
-  gap: 14px;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 20px;
   align-items: start;
 }
 
@@ -140,26 +140,26 @@ input {
   align-items: center;
   justify-content: center;
   align-self: start;
-  padding: 10px 12px;
-  border-radius: 18px;
+  padding: 14px 16px;
+  border-radius: 22px;
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(8px);
 }
 
 .brand-logo {
   display: block;
-  width: min(100%, 160px);
+  width: min(100%, 210px);
   height: auto;
 }
 
 .hero-copy {
   color: #ffffff;
-  padding-top: 2px;
+  padding-top: 8px;
 }
 
 .hero-date {
-  margin-bottom: 6px;
-  font-size: 0.78rem;
+  margin-bottom: 8px;
+  font-size: 0.88rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -167,16 +167,16 @@ input {
 }
 
 .hero-copy h1 {
-  font-size: clamp(1.7rem, 3vw, 2.6rem);
+  font-size: clamp(2.2rem, 4vw, 3.5rem);
   line-height: 0.96;
-  margin: 0 0 8px;
+  margin: 0 0 12px;
 }
 
 .hero-copy p {
   max-width: 520px;
   margin: 0;
-  font-size: 0.96rem;
-  line-height: 1.25;
+  font-size: 1.08rem;
+  line-height: 1.34;
   color: rgba(255, 255, 255, 0.9);
 }
 
@@ -671,7 +671,7 @@ input:focus {
 @media (max-width: 1120px) {
   .hero-content {
     grid-template-columns: 160px minmax(0, 1fr);
-    padding-bottom: 22px;
+    padding-bottom: 34px;
   }
 
   .form-grid-3 {
@@ -686,7 +686,7 @@ input:focus {
   }
 
   .page-overlap {
-    margin-top: -10px;
+    margin-top: -18px;
   }
 
   .hero-copy h1 {
