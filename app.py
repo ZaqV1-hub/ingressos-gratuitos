@@ -5,7 +5,6 @@ import io
 import json
 import os
 import smtplib
-import threading
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta, timezone
 from email.message import EmailMessage
@@ -52,8 +51,8 @@ EVENT_DATE_LABEL = "28 de junho de 2026"
 PANEL_TITLE = "Painel de Reservas"
 RESERVATION_TITLE = "Reserva de Ingressos"
 RESERVATION_SUBTITLE = "Preencha os dados para reservar seus ingressos"
-PANEL_USERNAME = os.getenv("PANEL_USERNAME", "operador5979")
-PANEL_PASSWORD = os.getenv("PANEL_PASSWORD", "reservas10")
+PANEL_USERNAME = os.getenv("PANEL_USERNAME", "admin")
+PANEL_PASSWORD = os.getenv("PANEL_PASSWORD", "troque-essa-senha")
 ZOHO_SMTP_HOST = os.getenv("ZOHO_SMTP_HOST", "smtp.zoho.com")
 ZOHO_SMTP_PORT = int(os.getenv("ZOHO_SMTP_PORT", "465"))
 ZOHO_SMTP_USERNAME = os.getenv("ZOHO_SMTP_USERNAME", "").strip()
@@ -364,6 +363,8 @@ Wagner Alves
     )
     message["To"] = reservation["holder_email"]
     message["Reply-To"] = ZOHO_SMTP_FROM_EMAIL
+    if ZOHO_SMTP_FROM_EMAIL and ZOHO_SMTP_FROM_EMAIL != reservation["holder_email"]:
+        message["Bcc"] = ZOHO_SMTP_FROM_EMAIL
     message.set_content(body)
 
     if ZOHO_SMTP_USE_SSL:
@@ -383,16 +384,6 @@ Wagner Alves
             smtp.starttls()
             smtp.login(ZOHO_SMTP_USERNAME, ZOHO_SMTP_PASSWORD)
             smtp.send_message(message)
-
-
-def send_confirmation_email_async(reservation: dict[str, Any]) -> None:
-    def run() -> None:
-        try:
-            send_confirmation_email(reservation)
-        except Exception:
-            app.logger.exception("Falha ao enviar e-mail de confirmação.")
-
-    threading.Thread(target=run, daemon=True).start()
 
 
 @app.route("/", methods=["GET"])
@@ -492,8 +483,17 @@ def create_reservation():
         current_timestamp(),
     )
 
-    send_confirmation_email_async(reservation)
-    flash("Reserva salva com sucesso. O e-mail de confirmação será enviado em instantes.", "success")
+    email_sent = True
+    try:
+        send_confirmation_email(reservation)
+    except Exception:
+        email_sent = False
+        app.logger.exception("Falha ao enviar e-mail de confirmação.")
+
+    if email_sent:
+        flash("Reserva salva com sucesso. O e-mail de confirmação foi enviado.", "success")
+    else:
+        flash("Reserva salva com sucesso, mas o e-mail de confirmação não pôde ser enviado agora.", "error")
     return redirect(url_for("reservation_page"))
 
 

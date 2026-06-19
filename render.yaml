@@ -15,9 +15,9 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: PANEL_USERNAME
-        value: operador5979
+        sync: false
       - key: PANEL_PASSWORD
-        value: reservas10
+        sync: false
       - key: FIREBASE_SERVICE_ACCOUNT_JSON_BASE64
         sync: false
       - key: ZOHO_SMTP_HOST
