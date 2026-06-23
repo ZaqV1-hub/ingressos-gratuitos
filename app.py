@@ -47,7 +47,7 @@ APP_PORT = int(os.getenv("PORT", os.getenv("APP_PORT", "5001")))
 STORAGE_BACKEND = os.getenv("STORAGE_BACKEND", "local").strip().lower()
 APP_UTC_OFFSET_HOURS = float(os.getenv("APP_UTC_OFFSET_HOURS", "-3"))
 
-EVENT_DATE_LABEL = "28 de junho de 2026"
+EVENT_DATE_LABEL = "19 de julho de 2026"
 PANEL_TITLE = "Painel de Reservas"
 RESERVATION_TITLE = "Reserva de Ingressos"
 RESERVATION_SUBTITLE = "Preencha os dados para reservar seus ingressos"
@@ -58,7 +58,10 @@ ZOHO_SMTP_PORT = int(os.getenv("ZOHO_SMTP_PORT", "465"))
 ZOHO_SMTP_USERNAME = os.getenv("ZOHO_SMTP_USERNAME", "").strip()
 ZOHO_SMTP_PASSWORD = os.getenv("ZOHO_SMTP_PASSWORD", "").strip()
 ZOHO_SMTP_FROM_EMAIL = os.getenv("ZOHO_SMTP_FROM_EMAIL", ZOHO_SMTP_USERNAME).strip()
-ZOHO_SMTP_FROM_NAME = os.getenv("ZOHO_SMTP_FROM_NAME", "Clube e Park Rincão").strip()
+ZOHO_SMTP_FROM_NAME = os.getenv(
+    "ZOHO_SMTP_FROM_NAME",
+    "Estância Parque Ecológico das Águas",
+).strip()
 ZOHO_SMTP_USE_SSL = os.getenv("ZOHO_SMTP_USE_SSL", "true").strip().lower() in {
     "1",
     "true",
@@ -68,35 +71,11 @@ EMAIL_SEND_TIMEOUT_SECONDS = int(os.getenv("EMAIL_SEND_TIMEOUT_SECONDS", "20"))
 IS_RENDER_ENV = bool(os.getenv("RENDER") or os.getenv("RENDER_EXTERNAL_URL"))
 
 TERMS_TEXT = """
-Declaro estar ciente às regras do parque abaixo:
-
-- Tenho ciência que o FAMILY DAY acontece somente 1 vez por ano no Clube Rincão, normalmente entre os meses de junho e julho. A data do dia 28/06/2026 está sendo divulgada nas redes sociais e no site oficial do parque.
-
-- O evento está limitado ao número de 400 participantes com gratuidade. Após esse total será adotada a tarifa normal do parque.
-
-- As regras comuns do parque para famílias continuam valendo:
-  * Estacionamento R$ 20,00 carro e motos;
-  * Proibida a entrada de alimentos e bebidas;
-  * Esse agendamento terá validade somente para o dia 28/06/2026.
-
-Outras informações iremos publicar em nossa rede social.
-
-Dúvidas ou esclarecimentos:
-11-99949-6373
-Wagner Alves
-""".strip()
-
-EVENT_DATE_LABEL = "19 de julho de 2026"
-ZOHO_SMTP_FROM_NAME = os.getenv(
-    "ZOHO_SMTP_FROM_NAME",
-    "Estancia Parque Ecologico das Aguas",
-).strip()
-TERMS_TEXT = """
-Os termos de uso do evento do Estancia Parque Ecologico das Aguas serao atualizados aqui em breve.
+Os termos de uso do evento do Estância Parque Ecológico das Águas serão atualizados aqui em breve.
 
 Data do evento: 19/07/2026
 
-Assim que o Lucas enviar a versao final dos termos, este texto sera substituido.
+Assim que o Lucas enviar a versão final dos termos, este texto será substituído.
 """.strip()
 
 app = Flask(__name__)
@@ -344,9 +323,9 @@ def send_confirmation_email(reservation: dict[str, Any]) -> None:
     companion_text = "\n".join(companion_lines) if companion_lines else "- Nenhum acompanhante"
     body = f"""Olá, {reservation['holder_name']}!
 
-Sua reserva para o Family Day do Clube e Park Rincão foi confirmada.
+Sua reserva para o evento do Estância Parque Ecológico das Águas foi confirmada.
 
-Data da reserva: 28/06/2026
+Data da reserva: 19/07/2026
 Titular: {reservation['holder_name']}
 E-mail: {reservation['holder_email']}
 Telefone: {reservation['holder_phone']}
@@ -356,19 +335,15 @@ Acompanhantes:
 {companion_text}
 
 Regras importantes:
-- O FAMILY DAY acontece somente uma vez por ano no Clube Rincão.
-- O evento é limitado a 400 participantes com gratuidade.
-- Estacionamento: R$ 20,00 para carro e motos.
-- Proibida a entrada de alimentos e bebidas.
-- Este agendamento vale somente para o dia 28/06/2026.
+- Este agendamento vale somente para o dia 19/07/2026.
+- Os termos finais do evento ainda serão atualizados pela equipe responsável.
 
 Dúvidas ou esclarecimentos:
-11-99949-6373
-Wagner Alves
+Consulte a equipe do Estância Parque Ecológico das Águas.
 """
 
     message = EmailMessage()
-    message["Subject"] = "Confirmação da sua reserva - Family Day Rincão"
+    message["Subject"] = "Confirmação da sua reserva - Estância Parque Ecológico das Águas"
     message["From"] = (
         f"{ZOHO_SMTP_FROM_NAME} <{ZOHO_SMTP_FROM_EMAIL}>"
         if ZOHO_SMTP_FROM_NAME

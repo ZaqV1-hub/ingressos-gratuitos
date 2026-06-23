@@ -19,37 +19,24 @@
         <div class="hero-content">
           <div class="brand-badge">
             <img
+              src="{{ url_for('static', filename='images/estancia-logo-white-stacked.png') }}"
+              alt="Estância Parque Ecológico das Águas"
+              class="brand-logo brand-logo-desktop"
+            />
+            <img
               src="{{ url_for('static', filename='images/estancia-logo-white.png') }}"
-              alt="Estancia Parque Ecologico das Aguas"
-              class="brand-logo"
+              alt="Estância Parque Ecológico das Águas"
+              class="brand-logo brand-logo-mobile"
             />
           </div>
 
           <div class="hero-copy">
-            <p class="hero-date">Estancia Parque Ecologico das Aguas | {{ event_date_label }}</p>
-            <h1>Reservar ficou<br />ainda mais facil!</h1>
+            <p class="hero-date">ESTÂNCIA PARQUE ECOLÓGICO DAS ÁGUAS | {{ event_date_label }}</p>
+            <h1>Reservar ficou<br />ainda mais fácil!</h1>
             <p>
-              Preencha os dados abaixo e garanta seus ingressos para aproveitar o
-              Estancia.
+              Preencha os dados abaixo e garanta seus ingressos para aproveitar a
+              Estância.
             </p>
-          </div>
-
-          <div class="hero-points">
-            <article>
-              <span class="hero-icon">+</span>
-              <strong>Rapido</strong>
-              <p>Preencha em poucos passos</p>
-            </article>
-            <article>
-              <span class="hero-icon">+</span>
-              <strong>Seguro</strong>
-              <p>Seus dados protegidos</p>
-            </article>
-            <article>
-              <span class="hero-icon">+</span>
-              <strong>Para todos</strong>
-              <p>Adicione quantos acompanhantes quiser</p>
-            </article>
           </div>
         </div>
       </section>
@@ -128,15 +115,15 @@
         <section class="trust-bar">
           <article>
             <strong>Ambiente 100% seguro</strong>
-            <p>Seus dados estao protegidos</p>
+            <p>Seus dados estão protegidos</p>
           </article>
           <article>
-            <strong>Processo rapido</strong>
-            <p>Reserva concluida em minutos</p>
+            <strong>Processo rápido</strong>
+            <p>Reserva concluída em minutos</p>
           </article>
           <article>
-            <strong>Confirmacao imediata</strong>
-            <p>Voce recebe por e-mail</p>
+            <strong>Confirmação imediata</strong>
+            <p>Você recebe por e-mail</p>
           </article>
         </section>
       </section>

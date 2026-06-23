@@ -152,6 +152,10 @@ input {
   height: auto;
 }
 
+.brand-logo-mobile {
+  display: none;
+}
+
 .hero-copy {
   color: #ffffff;
   padding-top: 8px;
@@ -746,6 +750,14 @@ input:focus {
 
   .brand-logo {
     width: min(100%, 180px);
+  }
+
+  .brand-logo-desktop {
+    display: none;
+  }
+
+  .brand-logo-mobile {
+    display: block;
   }
 
   .brand-badge {
