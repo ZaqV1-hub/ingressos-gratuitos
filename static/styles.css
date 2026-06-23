@@ -148,7 +148,7 @@ input {
 
 .brand-logo {
   display: block;
-  width: min(100%, 210px);
+  width: min(100%, 320px);
   height: auto;
 }
 
@@ -745,7 +745,7 @@ input:focus {
   }
 
   .brand-logo {
-    width: min(100%, 118px);
+    width: min(100%, 180px);
   }
 
   .brand-badge {

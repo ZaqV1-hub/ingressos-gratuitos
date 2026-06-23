@@ -86,6 +86,19 @@ Dúvidas ou esclarecimentos:
 Wagner Alves
 """.strip()
 
+EVENT_DATE_LABEL = "19 de julho de 2026"
+ZOHO_SMTP_FROM_NAME = os.getenv(
+    "ZOHO_SMTP_FROM_NAME",
+    "Estancia Parque Ecologico das Aguas",
+).strip()
+TERMS_TEXT = """
+Os termos de uso do evento do Estancia Parque Ecologico das Aguas serao atualizados aqui em breve.
+
+Data do evento: 19/07/2026
+
+Assim que o Lucas enviar a versao final dos termos, este texto sera substituido.
+""".strip()
+
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "reserva-local-simples")
 STORE_MODE = "local"
