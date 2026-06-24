@@ -71,19 +71,22 @@ Exemplo para converter o JSON em Base64 no PowerShell:
 
 Se preferir, use o arquivo [gerar_firebase_base64.ps1](C:/Users/Rincao-TI1/Documents/Codex/2026-06-18/eu-quero-criar-um-sistemazinho-de/gerar_firebase_base64.ps1).
 
-## E-mail por Zoho
+## E-mail por SMTP
 
 Para ativar o envio de confirmação por e-mail, configure:
 
 ```env
-ZOHO_SMTP_HOST=smtp.zoho.com
-ZOHO_SMTP_PORT=465
-ZOHO_SMTP_USERNAME=seu-email
-ZOHO_SMTP_PASSWORD=sua-senha-ou-app-password
-ZOHO_SMTP_FROM_EMAIL=seu-email
-ZOHO_SMTP_FROM_NAME=Clube Rincão
-ZOHO_SMTP_USE_SSL=true
+SMTP_HOST=smtp.titan.email
+SMTP_PORT=465
+SMTP_USERNAME=seu-email
+SMTP_PASSWORD=sua-senha
+SMTP_FROM_EMAIL=seu-email
+SMTP_FROM_NAME=Estância Parque Ecológico das Águas
+SMTP_USE_SSL=true
+EMAIL_SEND_TIMEOUT_SECONDS=20
 ```
+
+O projeto ainda aceita as variáveis antigas `ZOHO_SMTP_*`, mas agora a prioridade é sempre das variáveis `SMTP_*`.
 
 ## Observação sobre o plano Free do Render
 

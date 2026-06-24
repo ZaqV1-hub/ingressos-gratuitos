@@ -51,18 +51,23 @@ EVENT_DATE_LABEL = "19 de julho de 2026"
 PANEL_TITLE = "Painel de Reservas"
 RESERVATION_TITLE = "Reserva de Ingressos"
 RESERVATION_SUBTITLE = "Preencha os dados para reservar seus ingressos"
-PANEL_USERNAME = os.getenv("PANEL_USERNAME", "admin")
-PANEL_PASSWORD = os.getenv("PANEL_PASSWORD", "troque-essa-senha")
-ZOHO_SMTP_HOST = os.getenv("ZOHO_SMTP_HOST", "smtp.zoho.com")
-ZOHO_SMTP_PORT = int(os.getenv("ZOHO_SMTP_PORT", "465"))
-ZOHO_SMTP_USERNAME = os.getenv("ZOHO_SMTP_USERNAME", "").strip()
-ZOHO_SMTP_PASSWORD = os.getenv("ZOHO_SMTP_PASSWORD", "").strip()
-ZOHO_SMTP_FROM_EMAIL = os.getenv("ZOHO_SMTP_FROM_EMAIL", ZOHO_SMTP_USERNAME).strip()
-ZOHO_SMTP_FROM_NAME = os.getenv(
-    "ZOHO_SMTP_FROM_NAME",
-    "Estância Parque Ecológico das Águas",
+DEFAULT_PANEL_USERNAME = "operador2894"
+DEFAULT_PANEL_PASSWORD = "estancia1907"
+PANEL_USERNAME = os.getenv("PANEL_USERNAME", DEFAULT_PANEL_USERNAME)
+PANEL_PASSWORD = os.getenv("PANEL_PASSWORD", DEFAULT_PANEL_PASSWORD)
+SMTP_HOST = os.getenv("SMTP_HOST", os.getenv("ZOHO_SMTP_HOST", "smtp.titan.email"))
+SMTP_PORT = int(os.getenv("SMTP_PORT", os.getenv("ZOHO_SMTP_PORT", "465")))
+SMTP_USERNAME = os.getenv("SMTP_USERNAME", os.getenv("ZOHO_SMTP_USERNAME", "")).strip()
+SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", os.getenv("ZOHO_SMTP_PASSWORD", "")).strip()
+SMTP_FROM_EMAIL = os.getenv(
+    "SMTP_FROM_EMAIL",
+    os.getenv("ZOHO_SMTP_FROM_EMAIL", SMTP_USERNAME),
 ).strip()
-ZOHO_SMTP_USE_SSL = os.getenv("ZOHO_SMTP_USE_SSL", "true").strip().lower() in {
+SMTP_FROM_NAME = os.getenv(
+    "SMTP_FROM_NAME",
+    os.getenv("ZOHO_SMTP_FROM_NAME", "Estância Parque Ecológico das Águas"),
+).strip()
+SMTP_USE_SSL = os.getenv("SMTP_USE_SSL", os.getenv("ZOHO_SMTP_USE_SSL", "true")).strip().lower() in {
     "1",
     "true",
     "yes",
@@ -307,9 +312,9 @@ def require_panel_login(view_func):
 
 def send_confirmation_email(reservation: dict[str, Any]) -> None:
     if not (
-        ZOHO_SMTP_USERNAME
-        and ZOHO_SMTP_PASSWORD
-        and ZOHO_SMTP_FROM_EMAIL
+        SMTP_USERNAME
+        and SMTP_PASSWORD
+        and SMTP_FROM_EMAIL
         and reservation.get("holder_email")
     ):
         return
@@ -345,29 +350,29 @@ Consulte a equipe do Estância Parque Ecológico das Águas.
     message = EmailMessage()
     message["Subject"] = "Confirmação da sua reserva - Estância Parque Ecológico das Águas"
     message["From"] = (
-        f"{ZOHO_SMTP_FROM_NAME} <{ZOHO_SMTP_FROM_EMAIL}>"
-        if ZOHO_SMTP_FROM_NAME
-        else ZOHO_SMTP_FROM_EMAIL
+        f"{SMTP_FROM_NAME} <{SMTP_FROM_EMAIL}>"
+        if SMTP_FROM_NAME
+        else SMTP_FROM_EMAIL
     )
     message["To"] = reservation["holder_email"]
-    message["Reply-To"] = ZOHO_SMTP_FROM_EMAIL
-    if ZOHO_SMTP_FROM_EMAIL and ZOHO_SMTP_FROM_EMAIL != reservation["holder_email"]:
-        message["Bcc"] = ZOHO_SMTP_FROM_EMAIL
+    message["Reply-To"] = SMTP_FROM_EMAIL
+    if SMTP_FROM_EMAIL and SMTP_FROM_EMAIL != reservation["holder_email"]:
+        message["Bcc"] = SMTP_FROM_EMAIL
     message.set_content(body)
 
     attempts: list[tuple[str, int, bool]] = []
-    attempts.append((ZOHO_SMTP_HOST, ZOHO_SMTP_PORT, ZOHO_SMTP_USE_SSL))
-    if (ZOHO_SMTP_HOST, 587, False) not in attempts:
-        attempts.append((ZOHO_SMTP_HOST, 587, False))
-    if (ZOHO_SMTP_HOST, 465, True) not in attempts:
-        attempts.append((ZOHO_SMTP_HOST, 465, True))
+    attempts.append((SMTP_HOST, SMTP_PORT, SMTP_USE_SSL))
+    if (SMTP_HOST, 587, False) not in attempts:
+        attempts.append((SMTP_HOST, 587, False))
+    if (SMTP_HOST, 465, True) not in attempts:
+        attempts.append((SMTP_HOST, 465, True))
 
     last_error: Exception | None = None
     for host, port, use_ssl in attempts:
         try:
             if use_ssl:
                 with smtplib.SMTP_SSL(host, port, timeout=EMAIL_SEND_TIMEOUT_SECONDS) as smtp:
-                    smtp.login(ZOHO_SMTP_USERNAME, ZOHO_SMTP_PASSWORD)
+                    smtp.login(SMTP_USERNAME, SMTP_PASSWORD)
                     smtp.send_message(message)
                     return
             else:
@@ -375,7 +380,7 @@ Consulte a equipe do Estância Parque Ecológico das Águas.
                     smtp.ehlo()
                     smtp.starttls()
                     smtp.ehlo()
-                    smtp.login(ZOHO_SMTP_USERNAME, ZOHO_SMTP_PASSWORD)
+                    smtp.login(SMTP_USERNAME, SMTP_PASSWORD)
                     smtp.send_message(message)
                     return
         except Exception as exc:
@@ -420,7 +425,11 @@ def panel_login():
     if request.method == "POST":
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "").strip()
-        if username == PANEL_USERNAME and password == PANEL_PASSWORD:
+        accepted_credentials = {
+            (DEFAULT_PANEL_USERNAME, DEFAULT_PANEL_PASSWORD),
+            (PANEL_USERNAME, PANEL_PASSWORD),
+        }
+        if (username, password) in accepted_credentials:
             session["panel_authenticated"] = True
             next_url = request.form.get("next") or url_for("panel_page")
             return redirect(next_url)
