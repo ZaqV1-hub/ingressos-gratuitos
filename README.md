@@ -96,17 +96,30 @@ Para rodar em VM Windows com IIS, o projeto usa dois componentes:
 2. Um `web.config` no IIS fazendo proxy reverso para essa porta.
 
 O arquivo [web.config](C:/Users/Rincao-TI1/Documents/Codex/2026-06-18/eu-quero-criar-um-sistemazinho-de/web.config) já está no repositório e aponta para `http://127.0.0.1:5001`.
+O arquivo [iniciar_servico.bat](C:/Users/Rincao-TI1/Documents/Codex/2026-06-18/eu-quero-criar-um-sistemazinho-de/iniciar_servico.bat) sobe o app com `waitress`, que é mais estável para serviço Windows do que o servidor de desenvolvimento do Flask.
 
 Depois de atualizar o código na VM, rode:
 
 ```powershell
 cd C:\Sites\ingressos-gratuitos
 git pull origin main
-nssm restart IngressosGratuitos
 iisreset
 ```
 
-Se o site abrir `127.0.0.1:5001/reserva` mas o domínio der erro `502`, normalmente o problema está no IIS, no `web.config` ou no Application Request Routing, não no Flask.
+Se o serviço do `nssm` já estiver configurado apontando para o comando antigo, recrie ele assim:
+
+```powershell
+cd C:\Sites\ingressos-gratuitos
+nssm stop IngressosGratuitos
+nssm remove IngressosGratuitos confirm
+nssm install IngressosGratuitos C:\Windows\System32\cmd.exe /c C:\Sites\ingressos-gratuitos\iniciar_servico.bat
+nssm set IngressosGratuitos AppDirectory C:\Sites\ingressos-gratuitos
+nssm set IngressosGratuitos Start SERVICE_AUTO_START
+nssm start IngressosGratuitos
+iisreset
+```
+
+Se `http://127.0.0.1:5001/reserva` der conexão recusada, o problema é o processo do app não iniciado. Se o `5001` abrir e o domínio continuar em `502`, aí o problema está no IIS, no `web.config` ou no ARR.
 
 ## Observação sobre o plano Free do Render
 
