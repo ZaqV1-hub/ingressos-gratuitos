@@ -27,7 +27,19 @@ except ImportError:
 def load_dotenv_file(dotenv_path: Path) -> None:
     if not dotenv_path.exists():
         return
-    for raw_line in dotenv_path.read_text(encoding="utf-8").splitlines():
+
+    dotenv_text: str | None = None
+    for encoding in ("utf-8", "utf-8-sig", "cp1252", "latin-1"):
+        try:
+            dotenv_text = dotenv_path.read_text(encoding=encoding)
+            break
+        except UnicodeDecodeError:
+            continue
+
+    if dotenv_text is None:
+        dotenv_text = dotenv_path.read_text(encoding="utf-8", errors="replace")
+
+    for raw_line in dotenv_text.splitlines():
         line = raw_line.strip()
         if not line or line.startswith("#") or "=" not in line:
             continue
