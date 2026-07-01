@@ -88,6 +88,26 @@ EMAIL_SEND_TIMEOUT_SECONDS=20
 
 O projeto ainda aceita as variáveis antigas `ZOHO_SMTP_*`, mas agora a prioridade é sempre das variáveis `SMTP_*`.
 
+## Publicação em VM Windows com IIS
+
+Para rodar em VM Windows com IIS, o projeto usa dois componentes:
+
+1. Um processo Python local escutando em `127.0.0.1:5001`.
+2. Um `web.config` no IIS fazendo proxy reverso para essa porta.
+
+O arquivo [web.config](C:/Users/Rincao-TI1/Documents/Codex/2026-06-18/eu-quero-criar-um-sistemazinho-de/web.config) já está no repositório e aponta para `http://127.0.0.1:5001`.
+
+Depois de atualizar o código na VM, rode:
+
+```powershell
+cd C:\Sites\ingressos-gratuitos
+git pull origin main
+nssm restart IngressosGratuitos
+iisreset
+```
+
+Se o site abrir `127.0.0.1:5001/reserva` mas o domínio der erro `502`, normalmente o problema está no IIS, no `web.config` ou no Application Request Routing, não no Flask.
+
 ## Observação sobre o plano Free do Render
 
 No plano free, a instância pode entrar em repouso por inatividade. Quando alguém acessa depois disso, o primeiro carregamento pode demorar dezenas de segundos enquanto o serviço volta a subir. Esse comportamento é normal no free do Render. Para evitar isso de vez, só mudando para um plano pago.
